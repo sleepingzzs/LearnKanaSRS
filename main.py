@@ -68,10 +68,11 @@ _ _ _ _ _
 [1] REVIEW
 [2] VIEW PROGRESS
 [3] RESET PROGRESS
+[X] EXIT
 '''.format(lessons, reviews))
 
     choice = input('Select: ')
-    print(str(data[0][1]))
+
     if choice == '0' and (lessons > 0 or str(date.today()) > str(data[0][1])):
         learn()
     elif choice == '1' and reviews > 0:
@@ -81,6 +82,11 @@ _ _ _ _ _
     elif choice == '3':
         if input("Are you sure you want to reset? Type YES to confirm: ") == "YES":
             reset()
+    elif choice.upper().strip() == 'X':
+        pass
+    else:
+        print("Unavailable!")
+        welcome()
 def learn():
     cur.execute('''
             SELECT hiragana.kana, katakana.kana, hiragana.romaji, hiragana.id
@@ -136,7 +142,7 @@ _ _ _ _ _
                     VALUES ({}, {}, DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'), INTERVAL 4 HOUR), CURRENT_DATE())
                 '''.format(i[3], 1))
             con.commit()
-
+    welcome()
 def review():
     cur.execute('''
         SELECT h.kana, k.kana, h.romaji, level, p.id, 0 FROM progress p, hiragana h, katakana k
@@ -182,7 +188,7 @@ _ _ _ _ _
             print("The correct answer is '{}'".format(i[2]))
             input('Press Enter to continue...')
             data.append(i)
-
+    welcome()
 def view():
     cur.execute('''
         SELECT h.kana, k.kana, h.romaji, level, time FROM progress p, hiragana h, katakana k
@@ -199,6 +205,7 @@ def view():
             print('{3}     | {0} + {1} | {2}      | {4}'.format(i[0], i[1], i[2], i[3], i[4]))
         input('Press Enter to view more...')
         clear_console()
+    welcome()
 def reset():
     cur.execute('''
         DELETE FROM progress

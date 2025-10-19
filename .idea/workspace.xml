@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a5b836e-2c9f-478e-85d3-d42e9dd87c2e" name="Changes" comment="Todo: Add progress viewing">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="2a5b836e-2c9f-478e-85d3-d42e9dd87c2e" name="Changes" comment="final commit" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -78,7 +75,7 @@
       <updated>1760827952331</updated>
       <workItem from="1760827953394" duration="540000" />
       <workItem from="1760828719747" duration="152000" />
-      <workItem from="1760832578549" duration="1408000" />
+      <workItem from="1760832578549" duration="1726000" />
     </task>
     <task id="LOCAL-00001" summary="Todo: Add progress viewing">
       <option name="closed" value="true" />
@@ -88,7 +85,23 @@
       <option name="project" value="LOCAL" />
       <updated>1760828214324</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Todo: Code aesthetics">
+      <option name="closed" value="true" />
+      <created>1760834013230</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1760834013230</updated>
+    </task>
+    <task id="LOCAL-00003" summary="final commit">
+      <option name="closed" value="true" />
+      <created>1760834294764</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1760834294764</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -96,7 +109,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Todo: Add progress viewing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Todo: Add progress viewing" />
+    <MESSAGE value="Todo: Code aesthetics" />
+    <MESSAGE value="final commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="final commit" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/LearnKanaSRS$main.coverage" NAME="main Coverage Results" MODIFIED="1760833921377" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

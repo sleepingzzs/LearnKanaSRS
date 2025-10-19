@@ -86,6 +86,7 @@ _ _ _ _ _
         pass
     else:
         print("Unavailable!")
+        input("Press Enter to continue...")
         welcome()
 def learn():
     cur.execute('''

@@ -67,16 +67,19 @@ _ _ _ _ _
 
 [0] LEARN
 [1] REVIEW
-[2] RESET PROGRESS
+[2] VIEW PROGRESS
+[3] RESET PROGRESS
 '''.format(lessons, reviews))
 
     choice = input('Select: ')
-
+    print(str(data[0][1]))
     if choice == '0' and (lessons > 0 or str(date.today()) > str(data[0][1])):
         learn()
     elif choice == '1' and reviews > 0:
         review()
     elif choice == '2':
+        view()
+    elif choice == '3':
         if input("Are you sure you want to reset? Type YES to confirm: ") == "YES":
             reset()
 def learn():
@@ -180,6 +183,22 @@ _ _ _ _ _
             print("The correct answer is '{}'".format(i[2]))
             input('Press Enter to continue...')
             data.append(i)
+def view():
+    cur.execute('''
+        SELECT h.kana, k.kana, h.romaji, level, time FROM progress p, hiragana h, katakana k
+        WHERE p.id = h.id AND p.id = k.id
+        ORDER BY level, p.id
+    ''')
+
+    while True:
+        data = cur.fetchmany(5)
+        if not data:
+            break
+        print('Level | Kana   | Romaji | Next Review')
+        for i in data:
+            print('{3}     | {0} + {1} | {2}      | {4}'.format(i[0], i[1], i[2], i[3], i[4]))
+        input('Press Enter to view more...')
+        clear_console()
 def reset():
     cur.execute('''
         DELETE FROM progress

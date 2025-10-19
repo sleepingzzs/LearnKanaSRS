@@ -142,6 +142,7 @@ _ _ _ _ _
                     VALUES ({}, {}, DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'), INTERVAL 4 HOUR), CURRENT_DATE())
                 '''.format(i[3], 1))
             con.commit()
+    input('Press Enter to go back...')
     welcome()
 def review():
     cur.execute('''
@@ -188,6 +189,7 @@ _ _ _ _ _
             print("The correct answer is '{}'".format(i[2]))
             input('Press Enter to continue...')
             data.append(i)
+    input('Press Enter to go back...')
     welcome()
 def view():
     cur.execute('''
@@ -205,6 +207,7 @@ def view():
             print('{3}     | {0} + {1} | {2}      | {4}'.format(i[0], i[1], i[2], i[3], i[4]))
         input('Press Enter to view more...')
         clear_console()
+    input('Press Enter to go back...')
     welcome()
 def reset():
     cur.execute('''
@@ -212,6 +215,8 @@ def reset():
     ''')
     con.commit()
     print("Progress has been reset!")
+    input('Press Enter to go back...')
+    welcome()
 
 welcome()
 con.commit()

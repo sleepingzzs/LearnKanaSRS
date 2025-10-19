@@ -1,10 +1,9 @@
 import mysql.connector
 import random
-from datetime import date, datetime
+from datetime import date
 
 def clear_console():
     print("\n" * 100)
-
 
 con = mysql.connector.connect(
     host="localhost",
@@ -183,6 +182,7 @@ _ _ _ _ _
             print("The correct answer is '{}'".format(i[2]))
             input('Press Enter to continue...')
             data.append(i)
+
 def view():
     cur.execute('''
         SELECT h.kana, k.kana, h.romaji, level, time FROM progress p, hiragana h, katakana k

@@ -170,7 +170,10 @@ _ _ _ _ _
     clear_console()
     review(lessons)
 
-def review(lessons = get_reviews()):
+def review(lessons = None):
+    if not lessons:
+        lessons = get_lessons()
+
     random.shuffle(lessons)
 
     while lessons:

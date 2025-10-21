@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a5b836e-2c9f-478e-85d3-d42e9dd87c2e" name="Changes" comment="code reformat - neater and more efficient (2)">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="2a5b836e-2c9f-478e-85d3-d42e9dd87c2e" name="Changes" comment="code reformat - neater and more efficient (3)">
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -90,7 +89,7 @@
       <workItem from="1761028052609" duration="130000" />
       <workItem from="1761028577003" duration="1000" />
       <workItem from="1761029278223" duration="12781000" />
-      <workItem from="1761046950081" duration="374000" />
+      <workItem from="1761046950081" duration="936000" />
     </task>
     <task id="LOCAL-00001" summary="Todo: Add progress viewing">
       <option name="closed" value="true" />
@@ -188,7 +187,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761046588789</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="code reformat - neater and more efficient (3)">
+      <option name="closed" value="true" />
+      <created>1761047332762</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1761047332762</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -206,7 +213,8 @@
     <MESSAGE value="remove print statement" />
     <MESSAGE value="code reformat - neater and more efficient" />
     <MESSAGE value="code reformat - neater and more efficient (2)" />
-    <option name="LAST_COMMIT_MESSAGE" value="code reformat - neater and more efficient (2)" />
+    <MESSAGE value="code reformat - neater and more efficient (3)" />
+    <option name="LAST_COMMIT_MESSAGE" value="code reformat - neater and more efficient (3)" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/LearnKanaSRS$main.coverage" NAME="main Coverage Results" MODIFIED="1761028148026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

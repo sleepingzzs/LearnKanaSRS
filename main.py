@@ -84,10 +84,11 @@ _ _ _ _ _
         if input("Are you sure you want to reset? Type YES to confirm: ") == "YES":
             reset()
     elif choice.upper().strip() == 'X':
-        pass
+        return 0
     else:
         print("Unavailable!")
         input("Press Enter to continue...")
+    return 1
 def learn():
     cur.execute('''
             SELECT hiragana.kana, katakana.kana, hiragana.romaji, hiragana.id
@@ -218,4 +219,5 @@ def reset():
     input('Press Enter to go back...')
 
 while True:
-    welcome()
+    if not welcome():
+        break

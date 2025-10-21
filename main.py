@@ -26,12 +26,12 @@ srs = {
 }
 
 level_title = {
-    1: 'Apprentice 1',
-    2: 'Apprentice 2',
-    3: 'Apprentice 3',
-    4: 'Apprentice 4',
-    5: 'Guru 1',
-    6: 'Guru 2',
+    1: 'Apprentice I',
+    2: 'Apprentice II',
+    3: 'Apprentice III',
+    4: 'Apprentice IV',
+    5: 'Guru I',
+    6: 'Guru II',
     7: 'Master',
     8: 'Enlightened',
     9: 'Burned'
@@ -108,8 +108,9 @@ def get_reviews():
     return reviews
 
 def home():
+    clear_console()
     print('''
-_ _ _ _ _
+_ _ _ _ _ _ _ _ _ _ 
 
 Welcome to KanaSRS!
 > This terminal based application aims to teach you all the Japanese Kana using a Spaced Repetition System (SRS)
@@ -117,12 +118,12 @@ Welcome to KanaSRS!
 > Each day you can learn upto 10 Hiragana and 10 Katakana.
 > With the help of this application, you can master both, Hiragana and Katakana, within just two weeks!
 
-_ _ _ _ _
+_ _ _ _ _ _ _ _ _ _ 
 
 Lessons Available: {}
 Reviews Available: {}
 
-_ _ _ _ _
+_ _ _ _ _ _ _ _ _ _ 
 
 [0] LEARN
 [1] REVIEW
@@ -152,19 +153,22 @@ _ _ _ _ _
 
 def learn():
     lessons = get_lessons()
-
+    i = 1
     for lesson in lessons:
         clear_console()
         print('''
-_ _ _ _ _
+FLASHCARD #{}/104
+LEARNING #{}/5
+
+_ _ _ _ _ _ _ _ _ _ 
 
 HIRAGANA - {}
 KATAKANA - {}
 ROMAJI   - {}
 
-_ _ _ _ _
-        '''.format(lesson[0], lesson[1], lesson[2]))
-
+_ _ _ _ _ _ _ _ _ _
+        '''.format(lesson[3], i, lesson[0], lesson[1], lesson[2]))
+        i += 1
         input('Press Enter to continue...')
 
     clear_console()
@@ -175,21 +179,25 @@ def review(lessons = None):
         lessons = get_lessons()
 
     random.shuffle(lessons)
-
+    i = 1
+    j = len(lessons)
     while lessons:
         lesson = lessons[0]
         print('''
-_ _ _ _ _
+REVIEWING #{}/{}
+
+_ _ _ _ _ _ _ _ _ _ 
 
 HIRAGANA - {}
 KATAKANA - {}
 
-_ _ _ _ _
-        '''.format(lesson[0], lesson[1]))
+_ _ _ _ _ _ _ _ _ _ 
+        '''.format(i, j,lesson[0], lesson[1]))
 
         answer = input("ROMAJI   - ").lower().strip()
 
         if answer == lesson[2]:
+            i += 1
             level = 1
             interval = srs[level]
             _id = lesson[3]
@@ -247,10 +255,10 @@ def progress():
             input('No more pages! Press Enter to go back...')
             break
         data = [(h, k, r, level_title[l], t) for h, k, r, l, t in data]
+        print('PAGE #{}/{}\n'.format(str(i + 1), str(len(data))[:1]))
         print(tabulate(data, headers=['HIRAGANA', 'KATAKANA', 'ROMAJI', 'LEVEL', 'NEXT REVIEW'], tablefmt='grid'))
-        print('Page ' + str(i + 1))
         i += 1
-        input('Press Enter to go to the next page...')
+        input('\nPress Enter to go to the next page...')
         clear_console()
 
 def reset():

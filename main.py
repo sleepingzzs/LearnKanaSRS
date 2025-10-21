@@ -1,6 +1,7 @@
 import mysql.connector
 import random
 from datetime import date
+from tabulate import tabulate
 
 def clear_console():
     print("\n" * 100)
@@ -28,20 +29,20 @@ interval = {
 
 def welcome():
     cur.execute('''
-        SELECT id, unlocked
-        FROM progress
-        WHERE id = (SELECT MAX(id) FROM progress)
+        SELECT id, unlocked FROM progress
+        ORDER BY id DESC
+        LIMIT 1;
     ''')
 
     data = cur.fetchall()
 
     if not data:
         data = [(0, '0000-00-00')]
-
+    print(data)
     lessons = 10 - data[0][0] % 10
     if data[0][0] > 100:
         lessons = 104 - data[0][0]
-    if data[0][0] > 0 and data[0][0] % 10 == 0:
+    if data[0][0] != 0 and data[0][0] % 10 == 0 and str(date.today()) <= str(data[0][1]):
         lessons = 0
     cur.execute('''
         SELECT COUNT(*) FROM progress
@@ -87,7 +88,6 @@ _ _ _ _ _
     else:
         print("Unavailable!")
         input("Press Enter to continue...")
-        welcome()
 def learn():
     cur.execute('''
             SELECT hiragana.kana, katakana.kana, hiragana.romaji, hiragana.id
@@ -144,7 +144,6 @@ _ _ _ _ _
                 '''.format(i[3], 1))
             con.commit()
     input('Press Enter to go back...')
-    welcome()
 def review():
     cur.execute('''
         SELECT h.kana, k.kana, h.romaji, level, p.id, 0 FROM progress p, hiragana h, katakana k
@@ -175,15 +174,18 @@ _ _ _ _ _
             new_level = i[3] - (adjust * penalty)
             if i[5] == 0:
                 new_level = 1 + i[3]
-            if new_level < 0:
+            if new_level < 1:
                 new_level = 1
 
             print("Correct! ✅")
             input('Press Enter to continue...')
             cur.execute('''
-                INSERT INTO progress (id, level, time)
-                VALUES ({}, {}, DATE_ADD(DATE_FORMAT(NOW(), '%%Y-%%m-%%d %%H:00:00'), INTERVAL {} HOUR))
-            '''.format(i[4], new_level, interval[new_level]))
+                UPDATE progress
+                SET level = {}, 
+                    time = DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'), INTERVAL {} HOUR)
+                WHERE id = {}
+            '''.format(new_level, interval[new_level], i[4]))
+
         else:
             i[5] += 1
             print("Incorrect! ❌")
@@ -191,25 +193,22 @@ _ _ _ _ _
             input('Press Enter to continue...')
             data.append(i)
     input('Press Enter to go back...')
-    welcome()
 def view():
     cur.execute('''
         SELECT h.kana, k.kana, h.romaji, level, time FROM progress p, hiragana h, katakana k
         WHERE p.id = h.id AND p.id = k.id
-        ORDER BY level, p.id
+        ORDER BY level DESC, p.id
     ''')
 
     while True:
-        data = cur.fetchmany(5)
+        data = cur.fetchmany(10)
         if not data:
             break
-        print('Level | Kana   | Romaji | Next Review')
-        for i in data:
-            print('{3}     | {0} + {1} | {2}      | {4}'.format(i[0], i[1], i[2], i[3], i[4]))
+        print(tabulate(data, headers=['HIRAGANA', 'KATAKANA', 'ROMAJI', 'LEVEL', 'NEXT REVIEW'], tablefmt='grid'))
         input('Press Enter to view more...')
         clear_console()
     input('Press Enter to go back...')
-    welcome()
+
 def reset():
     cur.execute('''
         DELETE FROM progress
@@ -217,8 +216,6 @@ def reset():
     con.commit()
     print("Progress has been reset!")
     input('Press Enter to go back...')
-    welcome()
 
-welcome()
-con.commit()
-con.close()
+while True:
+    welcome()

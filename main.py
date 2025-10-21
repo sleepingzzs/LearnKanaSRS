@@ -7,7 +7,7 @@ con = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
-    database="kana_copy",
+    database="kana",
     charset="utf8mb4"
 )
 

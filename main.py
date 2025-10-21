@@ -3,19 +3,17 @@ import random
 from datetime import date
 from tabulate import tabulate
 
-def clear_console():
-    print("\n" * 100)
-
 con = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
-    database="kana",
-    charset='utf8mb4'
+    database="kana_copy",
+    charset="utf8mb4"
 )
+
 cur = con.cursor()
 
-interval = {
+srs = {
     1: 4,
     2: 8,
     3: 24,
@@ -27,27 +25,91 @@ interval = {
     9: 24 * 30 * 100,
 }
 
-def welcome():
-    cur.execute('''
-        SELECT id, unlocked FROM progress
-        ORDER BY id DESC
-        LIMIT 1;
-    ''')
+level_title = {
+    1: 'Apprentice 1',
+    2: 'Apprentice 2',
+    3: 'Apprentice 3',
+    4: 'Apprentice 4',
+    5: 'Guru 1',
+    6: 'Guru 2',
+    7: 'Master',
+    8: 'Enlightened',
+    9: 'Burned'
+}
 
-    data = cur.fetchall()
+def clear_console():
+    print("\n" * 100)
 
-    if not data:
-        data = [(0, '0000-00-00')]
-    lessons = 10 - data[0][0] % 10
-    if data[0][0] > 100:
-        lessons = 104 - data[0][0]
-    if data[0][0] != 0 and data[0][0] % 10 == 0 and str(date.today()) <= str(data[0][1]):
-        lessons = 0
+
+def available_lessons():
     cur.execute('''
-        SELECT COUNT(*) FROM progress
-        WHERE time < CURRENT_TIME()
-    ''')
-    reviews = cur.fetchall()[0][0]
+                SELECT id, unlocked
+                FROM progress
+                ORDER BY id DESC LIMIT 1
+                ''')
+
+    res = cur.fetchall()
+
+    if res:
+        if res[0][0] % 10 == 0 and str(res[0][1]) >= str(date.today()):
+            return 0
+        if res[0][0] > 100:
+            return 104 - (res[0][0] % 10)
+        return 10 - (res[0][0] % 10)
+
+    return 10
+
+
+def available_reviews():
+    cur.execute('''
+                SELECT COUNT(*)
+                FROM progress
+                WHERE time < CURRENT_TIME ()
+                ''')
+    return cur.fetchall()[0][0]
+
+
+def get_lessons():
+    cur.execute('''
+                SELECT hiragana.kana, katakana.kana, hiragana.romaji, hiragana.id
+                FROM hiragana,
+                     katakana
+                WHERE hiragana.id = katakana.id
+                  AND hiragana.id BETWEEN COALESCE((SELECT MAX(id) + 1 FROM progress), 1)
+                    AND COALESCE((SELECT MAX(id) + 5 FROM progress), 5)
+                ''')
+    return cur.fetchall()
+
+
+def new_level(cur_level, mistakes):
+    penalty = 2 if cur_level >= 5 else 1
+    adjust = round(mistakes / 2)
+    level = cur_level - (adjust * penalty)
+
+    if mistakes == 0:
+        level = cur_level + 1
+    if level < 1:
+        level = 1
+
+    return level
+
+
+def get_reviews():
+    cur.execute('''
+                SELECT h.kana, k.kana, h.romaji, p.id, level, 0
+                FROM progress p,
+                     hiragana h,
+                     katakana k
+                WHERE p.id = h.id
+                  AND p.id = k.id
+                  AND time <= CURRENT_TIME ()
+                    LIMIT 10
+                ''')
+    reviews = cur.fetchall()
+    reviews = [list(r) for r in reviews]
+    return reviews
+
+def home():
     print('''
 _ _ _ _ _
 
@@ -69,37 +131,31 @@ _ _ _ _ _
 [2] VIEW PROGRESS
 [3] RESET PROGRESS
 [X] EXIT
-'''.format(lessons, reviews))
+'''.format(available_lessons(), available_reviews()))
 
-    choice = input('Select: ')
+    choice = input('Select: ').strip().upper()
 
-    if choice == '0' and (lessons > 0 or str(date.today()) > str(data[0][1])):
+    if choice == '0' and available_lessons() > 0:
         learn()
-    elif choice == '1' and reviews > 0:
+    elif choice == '1' and available_reviews() > 0:
         review()
     elif choice == '2':
-        view()
+        progress()
     elif choice == '3':
-        if input("Are you sure you want to reset? Type YES to confirm: ") == "YES":
+        if input("Are you sure you want to reset your progress? Type YES to confirm: ") == 'YES':
             reset()
-    elif choice.upper().strip() == 'X':
-        return 0
+    elif choice == 'X':
+        return False
     else:
-        print("Unavailable!")
+        print('Unavailable!')
         input("Press Enter to continue...")
-    return 1
+    return True
+
+
 def learn():
-    cur.execute('''
-            SELECT hiragana.kana, katakana.kana, hiragana.romaji, hiragana.id
-            FROM hiragana, katakana
-            WHERE hiragana.id = katakana.id
-                AND hiragana.id BETWEEN COALESCE((SELECT MAX(id) + 1 FROM progress), 1)
-                    AND COALESCE((SELECT MAX(id) + 5 FROM progress), 5)
-        ''')
+    lessons = get_lessons()
 
-    data = cur.fetchall()
-
-    for i in data:
+    for lesson in lessons:
         clear_console()
         print('''
 _ _ _ _ _
@@ -109,54 +165,19 @@ KATAKANA - {}
 ROMAJI   - {}
 
 _ _ _ _ _
-'''.format(i[0], i[1], i[2]))
+        '''.format(lesson[0], lesson[1], lesson[2]))
 
         input('Press Enter to continue...')
 
     clear_console()
-    data2 = data.copy()
-    for i in data2:
-        print('''
-_ _ _ _ _
-
-HIRAGANA - {}
-KATAKANA - {}
-
-_ _ _ _ _
-'''.format(i[0], i[1]))
-
-        answer = input('ROMAJI   - ')
-
-        if answer.lower().strip() == i[2]:
-            print("Correct! ✅")
-            input('Press Enter to continue...')
-        else:
-            print("Incorrect! ❌")
-            print("The correct answer is '{}'".format(i[2]))
-            input('Press Enter to continue...')
-            data2.append(i)
-        clear_console()
-    else:
-        for i in data:
-            cur.execute('''
-                    INSERT INTO progress 
-                    VALUES ({}, {}, DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'), INTERVAL 4 HOUR), CURRENT_DATE())
-                '''.format(i[3], 1))
-            con.commit()
+    review(lessons)
     input('Press Enter to go back...')
-def review():
-    cur.execute('''
-        SELECT h.kana, k.kana, h.romaji, level, p.id, 0 FROM progress p, hiragana h, katakana k
-        WHERE p.id = h.id AND p.id = k.id AND time <= CURRENT_TIME()
-        LIMIT 10
-    ''')
-    data = cur.fetchall()
 
-    for i in range(len(data)):
-        data[i] = list(data[i])
+def review(lessons=get_reviews()):
+    random.shuffle(lessons)
 
-    random.shuffle(data)
-    for i in data:
+    while lessons:
+        lesson = lessons[0]
         print('''
 _ _ _ _ _
 
@@ -164,59 +185,85 @@ HIRAGANA - {}
 KATAKANA - {}
 
 _ _ _ _ _
-        '''.format(i[0], i[1]))
-        answer = input('ROMAJI   - ')
-        if answer.lower().strip() == i[2]:
-            penalty = 1
-            if i[3] >= 5:
-                penalty = 2
-            adjust = round(i[5] / 2)
-            new_level = i[3] - (adjust * penalty)
-            if i[5] == 0:
-                new_level = 1 + i[3]
-            if new_level < 1:
-                new_level = 1
+        '''.format(lesson[0], lesson[1]))
 
-            print("Correct! ✅")
-            input('Press Enter to continue...')
-            cur.execute('''
-                UPDATE progress
-                SET level = {}, 
+        answer = input("ROMAJI   - ").lower().strip()
+
+        if answer == lesson[2]:
+            level = 1
+            interval = srs[level]
+            _id = lesson[3]
+            try:
+                level = new_level(cur_level=lesson[4], mistakes=lesson[5])
+                cur.execute('''
+                    UPDATE progress
+                    SET level = {}, 
                     time = DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'), INTERVAL {} HOUR)
-                WHERE id = {}
-            '''.format(new_level, interval[new_level], i[4]))
+                    WHERE id = {}
+                '''.format(level, interval, _id))
+
+            except IndexError:
+                cur.execute('''
+                    INSERT INTO progress 
+                    VALUES ({}, {}, DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'), INTERVAL {} HOUR), CURRENT_DATE())
+                '''.format(_id, level, interval))
+
+            finally:
+                con.commit()
+
+            lessons.remove(lesson)
+
+            print("Correct! ✅")
+            input('Press Enter to continue...')
 
         else:
-            i[5] += 1
+            try:
+                lesson[5] += 1
+            except IndexError:
+                pass
             print("Incorrect! ❌")
-            print("The correct answer is '{}'".format(i[2]))
+            print("The correct answer was '{}'".format(lesson[2]))
             input('Press Enter to continue...')
-            data.append(i)
-    input('Press Enter to go back...')
-def view():
-    cur.execute('''
-        SELECT h.kana, k.kana, h.romaji, level, time FROM progress p, hiragana h, katakana k
-        WHERE p.id = h.id AND p.id = k.id
-        ORDER BY level DESC, p.id
-    ''')
+            lessons.append(lesson)
+            lessons.remove(lesson)
+            random.shuffle(lessons)
 
-    while True:
-        data = cur.fetchmany(10)
-        if not data:
-            break
-        print(tabulate(data, headers=['HIRAGANA', 'KATAKANA', 'ROMAJI', 'LEVEL', 'NEXT REVIEW'], tablefmt='grid'))
-        input('Press Enter to view more...')
         clear_console()
     input('Press Enter to go back...')
+
+def progress():
+    i = 0
+    clear_console()
+    while True:
+        cur.execute('''
+            SELECT h.kana, k.kana, h.romaji, level, time FROM progress p, hiragana h, katakana k
+            WHERE p.id = h.id AND p.id = k.id
+            ORDER BY level DESC, p.id
+            LIMIT {}, 10
+        '''.format(i * 10))
+        data = cur.fetchall()
+
+        if not data:
+            input('No more pages! Press Enter to go back...')
+            break
+        data = [(h, k, r, level_title[l], t) for h, k, r, l, t in data]
+        print(tabulate(data, headers=['HIRAGANA', 'KATAKANA', 'ROMAJI', 'LEVEL', 'NEXT REVIEW'], tablefmt='grid'))
+        print('Page ' + str(i + 1))
+        i += 1
+        input('Press Enter to go to the next page...')
+        clear_console()
 
 def reset():
     cur.execute('''
-        DELETE FROM progress
-    ''')
-    con.commit()
+                DELETE
+                FROM progress
+                ''')
     print("Progress has been reset!")
     input('Press Enter to go back...')
+    con.commit()
+
 
 while True:
-    if not welcome():
+    if not home():
+        con.close()
         break

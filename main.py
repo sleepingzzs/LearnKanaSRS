@@ -255,7 +255,7 @@ def progress():
             input('No more pages! Press Enter to go back...')
             break
         data = [(h, k, r, level_title[l], t) for h, k, r, l, t in data]
-        print('PAGE #{}/{}\n'.format(str(i + 1), str(len(data))[:1]))
+        print('PAGE #{}/{}\n'.format(str(i + 1), (len(data) - 1) // 10 + 1))
         print(tabulate(data, headers=['HIRAGANA', 'KATAKANA', 'ROMAJI', 'LEVEL', 'NEXT REVIEW'], tablefmt='grid'))
         i += 1
         input('\nPress Enter to go to the next page...')
@@ -268,7 +268,6 @@ def reset():
     print("Progress has been reset!")
     input('Press Enter to go back...')
     con.commit()
-
 
 while True:
     if not home():

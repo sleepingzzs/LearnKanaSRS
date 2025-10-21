@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a5b836e-2c9f-478e-85d3-d42e9dd87c2e" name="Changes" comment="">
+    <list default="true" id="2a5b836e-2c9f-478e-85d3-d42e9dd87c2e" name="Changes" comment="small things">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -92,6 +92,8 @@
       <workItem from="1761029278223" duration="12781000" />
       <workItem from="1761046950081" duration="1236000" />
       <workItem from="1761052192808" duration="2007000" />
+      <workItem from="1761054207430" duration="22000" />
+      <workItem from="1761061831907" duration="1243000" />
     </task>
     <task id="LOCAL-00001" summary="Todo: Add progress viewing">
       <option name="closed" value="true" />
@@ -205,7 +207,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761048097626</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="small things">
+      <option name="closed" value="true" />
+      <created>1761054222611</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1761054222611</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -225,7 +235,8 @@
     <MESSAGE value="code reformat - neater and more efficient (2)" />
     <MESSAGE value="code reformat - neater and more efficient (3)" />
     <MESSAGE value="code reformat - neater and more efficient (4)" />
-    <option name="LAST_COMMIT_MESSAGE" value="code reformat - neater and more efficient (4)" />
+    <MESSAGE value="small things" />
+    <option name="LAST_COMMIT_MESSAGE" value="small things" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/LearnKanaSRS$main.coverage" NAME="main Coverage Results" MODIFIED="1761053634356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

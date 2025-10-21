@@ -38,7 +38,6 @@ def welcome():
 
     if not data:
         data = [(0, '0000-00-00')]
-    print(data)
     lessons = 10 - data[0][0] % 10
     if data[0][0] > 100:
         lessons = 104 - data[0][0]

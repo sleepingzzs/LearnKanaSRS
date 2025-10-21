@@ -40,13 +40,12 @@ level_title = {
 def clear_console():
     print("\n" * 100)
 
-
 def available_lessons():
     cur.execute('''
-                SELECT id, unlocked
-                FROM progress
-                ORDER BY id DESC LIMIT 1
-                ''')
+        SELECT id, unlocked
+        FROM progress
+        ORDER BY id DESC LIMIT 1
+    ''')
 
     res = cur.fetchall()
 
@@ -62,22 +61,21 @@ def available_lessons():
 
 def available_reviews():
     cur.execute('''
-                SELECT COUNT(*)
-                FROM progress
-                WHERE time < CURRENT_TIME ()
-                ''')
+        SELECT COUNT(*)
+        FROM progress
+        WHERE time < CURRENT_TIME ()
+    ''')
     return cur.fetchall()[0][0]
 
 
 def get_lessons():
     cur.execute('''
-                SELECT hiragana.kana, katakana.kana, hiragana.romaji, hiragana.id
-                FROM hiragana,
-                     katakana
-                WHERE hiragana.id = katakana.id
-                  AND hiragana.id BETWEEN COALESCE((SELECT MAX(id) + 1 FROM progress), 1)
-                    AND COALESCE((SELECT MAX(id) + 5 FROM progress), 5)
-                ''')
+        SELECT hiragana.kana, katakana.kana, hiragana.romaji, hiragana.id
+        FROM hiragana, katakana
+        WHERE hiragana.id = katakana.id
+            AND hiragana.id BETWEEN COALESCE((SELECT MAX(id) + 1 FROM progress), 1)
+                AND COALESCE((SELECT MAX(id) + 5 FROM progress), 5)
+    ''')
     return cur.fetchall()
 
 
@@ -93,18 +91,18 @@ def new_level(cur_level, mistakes):
 
     return level
 
-
 def get_reviews():
     cur.execute('''
-                SELECT h.kana, k.kana, h.romaji, p.id, level, 0
-                FROM progress p,
-                     hiragana h,
-                     katakana k
-                WHERE p.id = h.id
-                  AND p.id = k.id
-                  AND time <= CURRENT_TIME ()
-                    LIMIT 10
-                ''')
+        SELECT h.kana, k.kana, h.romaji, p.id, level, 0
+        FROM progress p,
+            hiragana h,
+            katakana k
+        WHERE p.id = h.id
+        AND p.id = k.id
+        AND time <= CURRENT_TIME ()
+        LIMIT 10
+    ''')
+
     reviews = cur.fetchall()
     reviews = [list(r) for r in reviews]
     return reviews
@@ -171,9 +169,8 @@ _ _ _ _ _
 
     clear_console()
     review(lessons)
-    input('Press Enter to go back...')
 
-def review(lessons=get_reviews()):
+def review(lessons = get_reviews()):
     random.shuffle(lessons)
 
     while lessons:
@@ -255,9 +252,8 @@ def progress():
 
 def reset():
     cur.execute('''
-                DELETE
-                FROM progress
-                ''')
+        DELETE FROM progress
+    ''')
     print("Progress has been reset!")
     input('Press Enter to go back...')
     con.commit()

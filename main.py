@@ -248,7 +248,6 @@ def progress():
     cur.execute('SELECT COUNT(*) FROM progress')
     page = 0
     pages = (cur.fetchone()[0] - 1) // 10 + 1
-    print(pages)
     cur.execute('''
         SELECT h.kana, k.kana, h.romaji, level, time FROM progress p, hiragana h, katakana k
         WHERE p.id = h.id AND p.id = k.id

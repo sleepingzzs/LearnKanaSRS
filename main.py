@@ -1,3 +1,4 @@
+import math
 import mysql.connector
 import random
 from datetime import date
@@ -81,7 +82,7 @@ def get_lessons():
 
 def new_level(cur_level, mistakes):
     penalty = 2 if cur_level >= 5 else 1
-    adjust = round(mistakes / 2)
+    adjust = math.ceil(mistakes / 2)
     level = cur_level - (adjust * penalty)
 
     if mistakes == 0:

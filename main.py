@@ -37,6 +37,9 @@ level_title = {
     9: 'Burned'
 }
 
+cur.execute('SELECT COUNT(*) FROM hiragana')
+total = cur.fetchone()[0]
+
 def clear_console():
     print("\n" * 100)
 
@@ -48,14 +51,12 @@ def available_lessons():
     ''')
 
     res = cur.fetchall()
-    cur.execute('SELECT COUNT(*) FROM hiragana')
-    count = cur.fetchall()[0]
 
     if res:
         if res[0][0] % 10 == 0 and str(res[0][1]) >= str(date.today()):
             return 0
         if res[0][0] > 100:
-            return count - (res[0][0] % 10)
+            return total - (res[0][0] % 10)
         return 10 - (res[0][0] % 10)
 
     return 10
@@ -141,7 +142,7 @@ _ _ _ _ _ _ _ _ _ _
     elif choice == '2':
         progress()
     elif choice == '3':
-        libray()
+        library()
     elif choice == '4':
         if input("Are you sure you want to reset your progress? Type YES to confirm: ") == 'YES':
             reset()
@@ -160,7 +161,7 @@ def learn():
         clear_console()
         i += 1
         print('''
-FLASHCARD #{}/104
+FLASHCARD #{}/{}
 LEARNING #{}/5
 
 _ _ _ _ _ _ _ _ _ _ 
@@ -170,7 +171,7 @@ KATAKANA - {}
 ROMAJI   - {}
 
 _ _ _ _ _ _ _ _ _ _
-        '''.format(lesson[3], i, lesson[0], lesson[1], lesson[2]))
+        '''.format(lesson[3], total, i, lesson[0], lesson[1], lesson[2]))
         input('Press Enter to continue...')
 
     clear_console()
@@ -267,7 +268,7 @@ def progress():
         input('\nPress Enter to go to the next page...')
         clear_console()
 
-def libray():
+def library():
     cur.execute('SELECT COUNT(*) FROM hiragana')
     page = 0
     pages = (cur.fetchone()[0] - 1) // 10 + 1

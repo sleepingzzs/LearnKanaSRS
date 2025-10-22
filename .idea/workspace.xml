@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a5b836e-2c9f-478e-85d3-d42e9dd87c2e" name="Changes" comment="small thing">
+    <list default="true" id="2a5b836e-2c9f-478e-85d3-d42e9dd87c2e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +94,8 @@
       <workItem from="1761054207430" duration="22000" />
       <workItem from="1761061831907" duration="1447000" />
       <workItem from="1761094700887" duration="4464000" />
-      <workItem from="1761112177697" duration="606000" />
+      <workItem from="1761112177697" duration="830000" />
+      <workItem from="1761127905587" duration="6000" />
     </task>
     <task id="LOCAL-00001" summary="Todo: Add progress viewing">
       <option name="closed" value="true" />
@@ -225,7 +225,15 @@
       <option name="project" value="LOCAL" />
       <updated>1761063590270</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Added library viewing, promotion messages, fix logical errors">
+      <option name="closed" value="true" />
+      <created>1761112942112</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1761112942112</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -247,7 +255,8 @@
     <MESSAGE value="code reformat - neater and more efficient (4)" />
     <MESSAGE value="small things" />
     <MESSAGE value="small thing" />
-    <option name="LAST_COMMIT_MESSAGE" value="small thing" />
+    <MESSAGE value="Added library viewing, promotion messages, fix logical errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added library viewing, promotion messages, fix logical errors" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/LearnKanaSRS$main.coverage" NAME="main Coverage Results" MODIFIED="1761053634356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

@@ -13,7 +13,7 @@ con = mysql.connector.connect(
 
 cur = con.cursor()
 
-srs = {
+interval = {
     1: 4,
     2: 8,
     3: 24,
@@ -48,16 +48,17 @@ def available_lessons():
     ''')
 
     res = cur.fetchall()
+    cur.execute('SELECT COUNT(*) FROM hiragana')
+    count = cur.fetchall()[0]
 
     if res:
         if res[0][0] % 10 == 0 and str(res[0][1]) >= str(date.today()):
             return 0
         if res[0][0] > 100:
-            return 104 - (res[0][0] % 10)
+            return count - (res[0][0] % 10)
         return 10 - (res[0][0] % 10)
 
     return 10
-
 
 def available_reviews():
     cur.execute('''
@@ -66,7 +67,6 @@ def available_reviews():
         WHERE time < CURRENT_TIME ()
     ''')
     return cur.fetchall()[0][0]
-
 
 def get_lessons():
     cur.execute('''
@@ -77,7 +77,6 @@ def get_lessons():
                 AND COALESCE((SELECT MAX(id) + 5 FROM progress), 5)
     ''')
     return cur.fetchall()
-
 
 def new_level(cur_level, mistakes):
     penalty = 2 if cur_level >= 5 else 1
@@ -128,7 +127,8 @@ _ _ _ _ _ _ _ _ _ _
 [0] LEARN
 [1] REVIEW
 [2] VIEW PROGRESS
-[3] RESET PROGRESS
+[3] VIEW LIBRARY
+[4] RESET PROGRESS
 [X] EXIT
 '''.format(available_lessons(), available_reviews()))
 
@@ -141,21 +141,24 @@ _ _ _ _ _ _ _ _ _ _
     elif choice == '2':
         progress()
     elif choice == '3':
+        libray()
+    elif choice == '4':
         if input("Are you sure you want to reset your progress? Type YES to confirm: ") == 'YES':
             reset()
     elif choice == 'X':
         return False
     else:
+        clear_console()
         print('Unavailable!')
         input("Press Enter to continue...")
     return True
 
-
 def learn():
     lessons = get_lessons()
-    i = 1
+    i = 0
     for lesson in lessons:
         clear_console()
+        i += 1
         print('''
 FLASHCARD #{}/104
 LEARNING #{}/5
@@ -168,21 +171,20 @@ ROMAJI   - {}
 
 _ _ _ _ _ _ _ _ _ _
         '''.format(lesson[3], i, lesson[0], lesson[1], lesson[2]))
-        i += 1
         input('Press Enter to continue...')
 
     clear_console()
     review(lessons)
 
-def review(lessons = None):
-    if not lessons:
-        lessons = get_lessons()
+def review(reviews = None):
+    if not reviews:
+        reviews = get_reviews()
 
-    random.shuffle(lessons)
+    random.shuffle(reviews)
     i = 1
-    j = len(lessons)
-    while lessons:
-        lesson = lessons[0]
+    j = len(reviews)
+    while reviews:
+        rev = reviews[0]
         print('''
 REVIEWING #{}/{}
 
@@ -192,72 +194,98 @@ HIRAGANA - {}
 KATAKANA - {}
 
 _ _ _ _ _ _ _ _ _ _ 
-        '''.format(i, j,lesson[0], lesson[1]))
+        '''.format(i, j, rev[0], rev[1]))
 
         answer = input("ROMAJI   - ").lower().strip()
 
-        if answer == lesson[2]:
+        if answer == rev[2]:
             i += 1
             level = 1
-            interval = srs[level]
-            _id = lesson[3]
+            promotion = True
+
+            _id = rev[3]
             try:
-                level = new_level(cur_level=lesson[4], mistakes=lesson[5])
+                level = new_level(cur_level=rev[4], mistakes=rev[5])
                 cur.execute('''
                     UPDATE progress
                     SET level = {}, 
                     time = DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'), INTERVAL {} HOUR)
                     WHERE id = {}
-                '''.format(level, interval, _id))
+                '''.format(level, interval[level], _id))
+                promotion = False if level <= rev[4] else True
 
             except IndexError:
                 cur.execute('''
                     INSERT INTO progress 
                     VALUES ({}, {}, DATE_ADD(DATE_FORMAT(NOW(), '%Y-%m-%d %H:00:00'), INTERVAL {} HOUR), CURRENT_DATE())
-                '''.format(_id, level, interval))
+                '''.format(_id, level, interval[level]))
 
-            finally:
-                con.commit()
-
-            lessons.remove(lesson)
+            reviews.remove(rev)
 
             print("Correct! ✅")
+            print("Promoted to '{}' 🌱".format(level_title[level])) if promotion else print("Demoted to '{}' 🪨".format(level_title[level]))
             input('Press Enter to continue...')
 
         else:
             try:
-                lesson[5] += 1
+                rev[5] += 1
             except IndexError:
                 pass
             print("Incorrect! ❌")
-            print("The correct answer was '{}'".format(lesson[2]))
+            print("The correct answer was '{}'".format(rev[2]))
             input('Press Enter to continue...')
-            lessons.append(lesson)
-            lessons.remove(lesson)
-            random.shuffle(lessons)
+            reviews.append(rev)
+            reviews.remove(rev)
+            random.shuffle(reviews)
 
         clear_console()
+    con.commit()
     input('Press Enter to go back...')
 
 def progress():
-    i = 0
     clear_console()
+    cur.execute('SELECT COUNT(*) FROM progress')
+    page = 0
+    pages = (cur.fetchone()[0] - 1) // 10 + 1
+    print(pages)
+    cur.execute('''
+        SELECT h.kana, k.kana, h.romaji, level, time FROM progress p, hiragana h, katakana k
+        WHERE p.id = h.id AND p.id = k.id
+        ORDER BY level DESC, p.id
+    ''')
+
     while True:
-        cur.execute('''
-            SELECT h.kana, k.kana, h.romaji, level, time FROM progress p, hiragana h, katakana k
-            WHERE p.id = h.id AND p.id = k.id
-            ORDER BY level DESC, p.id
-            LIMIT {}, 10
-        '''.format(i * 10))
-        data = cur.fetchall()
+        data = cur.fetchmany(10)
+        page += 1
 
         if not data:
             input('No more pages! Press Enter to go back...')
             break
         data = [(h, k, r, level_title[l], t) for h, k, r, l, t in data]
-        print('PAGE #{}/{}\n'.format(str(i + 1), (len(data) - 1) // 10 + 1))
-        print(tabulate(data, headers=['HIRAGANA', 'KATAKANA', 'ROMAJI', 'LEVEL', 'NEXT REVIEW'], tablefmt='grid'))
-        i += 1
+        print('PAGE #{}/{}\n'.format(str(page), pages))
+        print(tabulate(data, headers=['HIRAGANA', 'KATAKANA', 'ROMAJI', 'LEVEL', 'NEXT REVIEW'], stralign='center', tablefmt='grid', numalign='center'))
+        input('\nPress Enter to go to the next page...')
+        clear_console()
+
+def libray():
+    cur.execute('SELECT COUNT(*) FROM hiragana')
+    page = 0
+    pages = (cur.fetchone()[0] - 1) // 10 + 1
+    clear_console()
+    cur.execute('''
+        SELECT h.id, h.kana, k.kana, h.romaji
+        FROM hiragana h, katakana k
+        WHERE h.id = k.id
+    ''')
+    while True:
+        data = cur.fetchmany(10)
+        page += 1
+
+        if not data:
+            input('No more pages! Press Enter to go back...')
+            break
+        print('PAGE #{}/{}\n'.format(str(page), pages))
+        print(tabulate(data, headers=['ID', 'HIRAGANA', 'KATAKANA', 'ROMAJI'], stralign='center', tablefmt='grid', numalign='center'))
         input('\nPress Enter to go to the next page...')
         clear_console()
 
